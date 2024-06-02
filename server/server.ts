@@ -1,45 +1,49 @@
-const express = require("express");
-const http = require("http");
-const socketIo = require("socket.io");
-const cors = require("cors");
-const shortid = require("shortid");
+import express, { Request, Response } from "express";
+import http from "http";
+import { Server as SocketIOServer } from "socket.io";
+import cors from "cors";
+import shortid from "shortid";
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
 const server = http.createServer(app);
-const io = socketIo(server, {
+const io = new SocketIOServer(server, {
   cors: {
     origin: "http://localhost:3000",
     methods: ["GET", "POST"],
   },
 });
 
-const sessions = {}; // Store code snippets by session ID
+interface Sessions {
+  [key: string]: string;
+}
 
-app.post("/api/create", (req, res) => {
+const sessions: Sessions = {}; // Store code snippets by session ID
+
+app.post("/api/create", (req: Request, res: Response) => {
   const sessionId = shortid.generate();
   sessions[sessionId] = "";
   res.json({ sessionId });
 });
 
-app.get("/api/code/:sessionId", (req, res) => {
+app.get("/api/code/:sessionId", (req: Request, res: Response) => {
   const { sessionId } = req.params;
   const code = sessions[sessionId] || "";
   res.json({ code });
 });
 
 io.on("connection", (socket) => {
-  socket.on("join", (sessionId) => {
-    socket.join(sessionId);
-    socket.sessionId = sessionId;
+  let sessionId: string;
 
+  socket.on("join", (id: string) => {
+    sessionId = id;
+    socket.join(sessionId);
     socket.emit("codeUpdate", sessions[sessionId]);
   });
 
-  socket.on("codeChange", (code) => {
-    const { sessionId } = socket;
+  socket.on("codeChange", (code: string) => {
     sessions[sessionId] = code;
     socket.to(sessionId).emit("codeUpdate", code);
   });
