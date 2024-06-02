@@ -7,7 +7,7 @@ const HomeComponent = () => {
     const router = useRouter();
 
     const createNewSession = async () => {
-      const response = await axios.post('http://localhost:4000/api/create');
+      const response = await axios.post('http://localhost:8001/api/create');
       const { sessionId } = response.data;
       router.push(`/${sessionId}`);
     };
