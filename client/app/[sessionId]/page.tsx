@@ -18,17 +18,27 @@ export default function CodeEditor() {
   useEffect(() => {
     if (!sessionId) return;
 
+    // Join the session room
     socket.emit('join', sessionId);
 
+    // Listen for code updates
     socket.on('codeUpdate', (newCode: any) => {
       setCode(newCode);
     });
 
-    axios.get(`http://localhost:4000/api/code/${sessionId}`).then(response => {
-      setCode(response.data.code);
-    });
+    // Fetch initial code for the session
+    axios.get(`http://localhost:4000/api/code/${sessionId}`)
+      .then(response => {
+        setCode(response.data.code);
+      })
+      .catch(error => {
+        console.error('Error fetching code:', error);
+      });
 
-    return () => socket.off('codeUpdate');
+    return () => {
+      socket.off('codeUpdate');
+      socket.emit('leave', sessionId);
+    };
   }, [sessionId]);
 
   const handleEditorChange = (value: any) => {
