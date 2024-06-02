@@ -1,10 +1,9 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import http from "http";
 import { Server as SocketIOServer } from "socket.io";
 import cors from "cors";
 import shortid from "shortid";
 import mongoose from "mongoose";
-import { setInterval } from "timers";
 
 const app = express();
 app.use(cors());
@@ -32,30 +31,17 @@ const io = new SocketIOServer(server, {
   },
 });
 
-let cachedSessions = {};
-
-// Function to save cached data to the database
-const saveToDB = async () => {
-  for (const sessionId in cachedSessions) {
-    const code = cachedSessions[sessionId];
-    await Session.findOneAndUpdate({ sessionId }, { code });
-  }
-};
-
-// Cache cleanup and database sync every 9 seconds
-setInterval(saveToDB, 9000);
-
 app.post("/api/create", async (req, res) => {
   const sessionId = shortid.generate();
   const session = new Session({ sessionId, code: "" });
   await session.save();
-  cachedSessions[sessionId] = "";
   res.json({ sessionId });
 });
 
 app.get("/api/code/:sessionId", async (req, res) => {
   const { sessionId } = req.params;
-  const code = cachedSessions[sessionId] || "";
+  const session = await Session.findOne({ sessionId });
+  const code = session ? session.code : "";
   res.json({ code });
 });
 
@@ -67,13 +53,12 @@ io.on("connection", (socket) => {
     socket.join(sessionId);
     const session = await Session.findOne({ sessionId });
     if (session) {
-      cachedSessions[sessionId] = session.code || "";
       socket.emit("codeUpdate", session.code);
     }
   });
 
-  socket.on("codeChange", (code) => {
-    cachedSessions[sessionId] = code;
+  socket.on("codeChange", async (code) => {
+    await Session.updateOne({ sessionId }, { code });
     socket.to(sessionId).emit("codeUpdate", code);
   });
 
