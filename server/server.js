@@ -1,9 +1,9 @@
-import express, { Request, Response } from "express";
-import http from "http";
-import { Server as SocketIOServer } from "socket.io";
-import cors from "cors";
-import shortid from "shortid";
-import mongoose from "mongoose";
+const express = require("express");
+const http = require("http");
+const { Server } = require("socket.io");
+const cors = require("cors");
+const shortid = require("shortid");
+const mongoose = require("mongoose");
 
 const app = express();
 app.use(cors());
@@ -33,7 +33,7 @@ const sessionSchema = new mongoose.Schema({
 const Session = mongoose.model("Session", sessionSchema);
 
 const server = http.createServer(app);
-const io = new SocketIOServer(server, {
+const io = new Server(server, {
   cors: {
     origin: "http://localhost:3000",
     methods: ["GET", "POST"],
