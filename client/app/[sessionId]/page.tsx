@@ -8,7 +8,7 @@ import dynamic from 'next/dynamic';
 
 const Editor = dynamic(() => import('@monaco-editor/react'), { ssr: false });
 
-const socket: any = io('http://localhost:8001');
+const socket: any = io('https://realtime-code-sharing-web-app.onrender.com');
 
 export default function CodeEditor() {
   const params = useParams();
@@ -27,7 +27,7 @@ export default function CodeEditor() {
     });
 
     // Fetch initial code for the session
-    axios.get(`http://localhost:8001/api/code/${sessionId}`)
+    axios.get(`https://realtime-code-sharing-web-app.onrender.com/api/code/${sessionId}`)
       .then(response => {
         setCode(response.data.code);
       })
