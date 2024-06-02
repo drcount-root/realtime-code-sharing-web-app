@@ -16,6 +16,7 @@
     "@types/socket.io": "^3.0.2",
     "cors": "^2.8.5",
     "express": "^4.19.2",
+    "mongoose": "^8.4.1",
     "shortid": "^2.2.16",
     "socket.io": "^4.7.5",
     "typescript": "^5.4.5"

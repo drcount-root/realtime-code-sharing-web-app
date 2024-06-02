@@ -3,10 +3,23 @@ import http from "http";
 import { Server as SocketIOServer } from "socket.io";
 import cors from "cors";
 import shortid from "shortid";
+import mongoose from "mongoose";
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// Connect to MongoDB
+mongoose.connect("mongodb+srv://dexterXXX:FRzdtS5fugquPQrx@cluster0.oxujkaw.mongodb.net/codeDB");
+
+// Define Mongoose Schema
+const sessionSchema = new mongoose.Schema({
+  sessionId: String,
+  code: String,
+});
+
+// Create Mongoose Model
+const Session = mongoose.model("Session", sessionSchema);
 
 const server = http.createServer(app);
 const io = new SocketIOServer(server, {
@@ -16,35 +29,34 @@ const io = new SocketIOServer(server, {
   },
 });
 
-interface Sessions {
-  [key: string]: string;
-}
-
-const sessions: Sessions = {}; // Store code snippets by session ID
-
-app.post("/api/create", (req: Request, res: Response) => {
+app.post("/api/create", async (req: Request, res: Response) => {
   const sessionId = shortid.generate();
-  sessions[sessionId] = "";
+  const session = new Session({ sessionId, code: "" });
+  await session.save();
   res.json({ sessionId });
 });
 
-app.get("/api/code/:sessionId", (req: Request, res: Response) => {
+app.get("/api/code/:sessionId", async (req: Request, res: Response) => {
   const { sessionId } = req.params;
-  const code = sessions[sessionId] || "";
+  const session = await Session.findOne({ sessionId });
+  const code = session ? session.code : "";
   res.json({ code });
 });
 
 io.on("connection", (socket) => {
   let sessionId: string;
 
-  socket.on("join", (id: string) => {
+  socket.on("join", async (id: string) => {
     sessionId = id;
     socket.join(sessionId);
-    socket.emit("codeUpdate", sessions[sessionId]);
+    const session = await Session.findOne({ sessionId });
+    if (session) {
+      socket.emit("codeUpdate", session.code);
+    }
   });
 
-  socket.on("codeChange", (code: string) => {
-    sessions[sessionId] = code;
+  socket.on("codeChange", async (code: string) => {
+    await Session.updateOne({ sessionId }, { code });
     socket.to(sessionId).emit("codeUpdate", code);
   });
 
