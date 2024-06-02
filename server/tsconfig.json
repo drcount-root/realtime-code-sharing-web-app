@@ -6,7 +6,17 @@
       "esModuleInterop": true,
       "skipLibCheck": true,
       "outDir": "./dist",
-      "rootDir": "./"
+      "rootDir": "./",
+      "forceConsistentCasingInFileNames": true,
+      "moduleResolution": "node",
+      "resolveJsonModule": true,
+      "baseUrl": "./",
+      "paths": {
+        "*": ["*"]
+      },
+      "strictNullChecks": true,
+      "strictPropertyInitialization": true,
+      "noImplicitAny": true
     },
     "include": ["server.ts"],
     "exclude": ["node_modules"]
