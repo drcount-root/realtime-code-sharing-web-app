@@ -4,6 +4,7 @@ const { Server } = require("socket.io");
 const cors = require("cors");
 const shortid = require("shortid");
 const mongoose = require("mongoose");
+const cron = require('node-cron');
 
 const app = express();
 app.use(cors());
@@ -23,6 +24,10 @@ mongoose.connect(
 const sessionSchema = new mongoose.Schema({
   sessionId: String,
   code: String,
+  lastModified: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 // Create Mongoose Model
@@ -38,7 +43,7 @@ const io = new Server(server, {
 
 app.post("/api/create", async (req, res) => {
   const sessionId = shortid.generate();
-  const session = new Session({ sessionId, code: "" });
+  const session = new Session({ sessionId, code: "", lastModified: Date.now() });
   await session.save();
   res.json({ sessionId });
 });
@@ -63,13 +68,25 @@ io.on("connection", (socket) => {
   });
 
   socket.on("codeChange", async (code) => {
-    await Session.updateOne({ sessionId }, { code });
+    await Session.updateOne({ sessionId }, { code, lastModified: Date.now() });
     socket.to(sessionId).emit("codeUpdate", code);
   });
 
   socket.on("disconnect", () => {
     console.log("user disconnected");
   });
+});
+
+// This cron job will run daily at midnight
+cron.schedule('0 0 * * *', async () => {
+  try {
+    const result = await Session.deleteMany({
+      lastModified: { $lt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
+    });
+    console.log(`Deleted ${result.deletedCount} documents`);
+  } catch (error) {
+    console.error('Error deleting old documents:', error);
+  }
 });
 
 const PORT = 8001;
