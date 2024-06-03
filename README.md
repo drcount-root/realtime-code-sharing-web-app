@@ -1,4 +1,4 @@
-# Real-Time Code-Sharing Application: A Comprehensive Overview
+# Real-Time Code-Sharing Application
 
 ### Introduction
 This real-time code-sharing application is designed to facilitate seamless collaboration among developers, educators, and coding enthusiasts. Leveraging cutting-edge web technologies, the platform offers an interactive and dynamic environment for coding, teaching, and learning. Built with Next.js, TypeScript, Express, Node.js, Socket.io, MongoDB it integrates real-time collaboration, syntax highlighting, and auto-deletion of code after 30 days of inactivity. This summary delves into the features, architecture, and benefits of this innovative application.
