@@ -11,7 +11,7 @@ This real-time code-sharing application is designed to facilitate seamless colla
 
 
 ### Todos
-1. User can choose username
-2. Access Type - a. Public (without password), b. Private (with password)
-1. Real-Time Users Collaboration
-2. Real-Time user cursor
+- [ ] User can choose username
+- [ ] Access Type - a. Public (without password), b. Private (with password)
+- [ ] Real-Time Users Collaboration
+- [ ] Real-Time user cursor
