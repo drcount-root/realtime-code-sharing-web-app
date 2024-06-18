@@ -8,3 +8,10 @@ This real-time code-sharing application is designed to facilitate seamless colla
 2. Language Support: Supports syntax highlighting for multiple programming languages, making it easier to read and write code.
 3. Editor Integration: Utilizes popular code editor libraries to provide a familiar and efficient coding experience.
 4. Auto-Deleting Code (Inactivity-Based Deletion): Automatically deletes code files 30 days after the last modification, ensuring that stale and outdated code does not clutter the system.
+
+
+### Todos
+1. User can choose username
+2. Access Type - a. Public (without password), b. Private (with password)
+1. Real-Time Users Collaboration
+2. Real-Time user cursor
