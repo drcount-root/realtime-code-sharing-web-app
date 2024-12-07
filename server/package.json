@@ -4,6 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
+    "dev": "nodemon -w . server.js",
     "start": "node server.js"
   },
   "keywords": [],
@@ -16,5 +17,8 @@
     "node-cron": "^3.0.3",
     "shortid": "^2.2.16",
     "socket.io": "^4.7.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
   }
 }

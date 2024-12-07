@@ -7,7 +7,7 @@ const HomeComponent = () => {
     const router = useRouter();
 
     const createNewSession = async () => {
-      const response = await axios.post('https://realtime-code-sharing-web-app.onrender.com/api/create');
+      const response = await axios.post(process.env.NEXT_PUBLIC_API_BASE_URL + '/api/create');
       const { sessionId } = response.data;
       router.push(`/${sessionId}`);
     };
