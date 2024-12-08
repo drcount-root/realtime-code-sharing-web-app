@@ -1,49 +1,52 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
-import io from 'socket.io-client';
-import axios from 'axios';
-import dynamic from 'next/dynamic';
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import dynamic from "next/dynamic";
+import io from "socket.io-client";
+import { toast } from "sonner";
+import { getCode } from "@/utils/api_utils";
 
-const Editor = dynamic(() => import('@monaco-editor/react'), { ssr: false });
+const Editor = dynamic(() => import("@monaco-editor/react"), { ssr: false });
 
 const socket = io(process.env.NEXT_PUBLIC_API_BASE_URL as string);
 
 export default function CodeEditor() {
   const params = useParams();
-  const sessionId = params.sessionId;
-  const [code, setCode] = useState('');
+  const sessionId = params.sessionId as string;
+  const [code, setCode] = useState("");
 
   useEffect(() => {
     if (!sessionId) return;
 
     // Join the session room
-    socket.emit('join', sessionId);
+    socket.emit("join", sessionId);
 
     // Listen for code updates
-    socket.on('codeUpdate', (newCode: any) => {
+    socket.on("codeUpdate", (newCode: any) => {
       setCode(newCode);
     });
 
     // Fetch initial code for the session
-    axios.get(process.env.NEXT_PUBLIC_API_BASE_URL + `/api/sessions/code/${sessionId}`)
-      .then(response => {
-        setCode(response.data.code);
+    getCode(sessionId)
+      .then((newCode) => {
+        toast.success("Session fetched successfully");
+        setCode(newCode);
       })
-      .catch(error => {
-        console.error('Error fetching code:', error);
+      .catch((error) => {
+        toast.error("Uh oh! Something went wrong");
+        console.error("Error fetching code:", error);
       });
 
     return () => {
-      socket.off('codeUpdate');
-      socket.emit('leave', sessionId);
+      socket.off("codeUpdate");
+      socket.emit("leave", sessionId);
     };
   }, [sessionId]);
 
   const handleEditorChange = (value: any) => {
     setCode(value);
-    socket.emit('codeChange', value);
+    socket.emit("codeChange", value);
   };
 
   return (
