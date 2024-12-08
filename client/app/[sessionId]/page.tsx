@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import io from "socket.io-client";
 import { toast } from "sonner";
@@ -15,6 +15,7 @@ export default function CodeEditor() {
   const params = useParams();
   const sessionId = params.sessionId as string;
   const [code, setCode] = useState("");
+  const router = useRouter();
 
   useEffect(() => {
     if (!sessionId) return;
@@ -30,12 +31,12 @@ export default function CodeEditor() {
     // Fetch initial code for the session
     getCode(sessionId)
       .then((newCode) => {
-        toast.success("Session fetched successfully");
         setCode(newCode);
       })
       .catch((error) => {
         toast.error("Uh oh! Something went wrong");
         console.error("Error fetching code:", error);
+        setTimeout(() => router.push("/"), 1000);
       });
 
     return () => {
