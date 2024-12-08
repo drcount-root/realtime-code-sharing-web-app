@@ -26,7 +26,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Navbar />
+          {/* <Navbar /> */}
           <main>{children}</main>
           <Toaster position="top-right" richColors duration={2000} />
         </ThemeProvider>
