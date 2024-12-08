@@ -26,3 +26,30 @@ export const getSessionCode = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error", error });
   }
 };
+
+export const deleteEmptySession = async (req, res) => {
+  try {
+    const sessions = await Session.find({
+      code: "",
+    });
+
+    console.log(`Found ${sessions.length} empty sessions`);
+
+    if (sessions.length === 0) {
+      return res.json({ message: 'No empty sessions found to delete' });
+    }
+
+    // Delete those empty sessions
+    const result = await Session.deleteMany({
+      _id: { $in: sessions.map((s) => s._id) },
+    });
+
+    // Respond with the number of deleted sessions
+    res.json({
+      message: `Deleted ${result.deletedCount} empty session documents`,
+    });
+  } catch (error) {
+    console.error("Error deleting empty sessions:", error);
+    res.status(500).json({ message: "Internal Server Error", error: error.message });
+  }
+};
