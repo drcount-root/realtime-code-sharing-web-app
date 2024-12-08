@@ -1,6 +1,5 @@
 import React from "react";
 import Link from "next/link";
-import { ThemeToggler } from "./ThemeToggler";
 
 const Navbar = () => {
   return (
@@ -8,7 +7,6 @@ const Navbar = () => {
       <Link href="/" className="text-lg font-bold text-white">
         CodeShare
       </Link>
-      <ThemeToggler />
     </header>
   );
 };
