@@ -20,9 +20,7 @@ connectDB();
 // Middleware
 app.use(
   cors({
-    origin: [
-      // process.env.DEVLOPMENT_FE_URL, 
-      process.env.PRODUCTION_FE_URL],
+    origin: [process.env.DEVLOPMENT_FE_URL, process.env.PRODUCTION_FE_URL],
   })
 );
 
@@ -35,9 +33,7 @@ app.use("/api/sessions", sessionRoutes);
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: [
-      // process.env.DEVLOPMENT_FE_URL, 
-      process.env.PRODUCTION_FE_URL],
+    origin: [process.env.DEVLOPMENT_FE_URL, process.env.PRODUCTION_FE_URL],
     methods: ["GET", "POST"],
   },
 });
