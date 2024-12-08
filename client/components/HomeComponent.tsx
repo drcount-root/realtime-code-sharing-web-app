@@ -1,8 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { createNewSession } from "@/utils/api_utils";
 import { toast } from "sonner";
+import { createNewSession } from "@/utils/api_utils";
 import { Button } from "./ui/button";
 
 const HomeComponent = () => {
